@@ -8,8 +8,8 @@ module HoptoadNotifier
   module Rails
     def self.initialize
       if defined?(ActionController::Base)
-        ActionController::Base.send(:include, HoptoadNotifier::Rails::ActionControllerCatcher)
-        ActionController::Base.send(:include, HoptoadNotifier::Rails::ErrorLookup)
+        ActionDispatch::ShowExceptions.send(:include, HoptoadNotifier::Rails::ActionControllerCatcher)
+        ActionDispatch::ShowExceptions.send(:include, HoptoadNotifier::Rails::ErrorLookup)
         ActionController::Base.send(:include, HoptoadNotifier::Rails::ControllerMethods)
         ActionController::Base.send(:include, HoptoadNotifier::Rails::JavascriptNotifier)
       end
@@ -21,7 +21,7 @@ module HoptoadNotifier
                      end
 
       if defined?(::Rails.configuration) && ::Rails.configuration.respond_to?(:middleware)
-        ::Rails.configuration.middleware.insert_after 'ActionController::Failsafe',
+        ::Rails.configuration.middleware.insert_after 'ActionDispatch::ShowExceptions',
                                                       HoptoadNotifier::Rack
         ::Rails.configuration.middleware.insert_after 'Rack::Lock',
                                                       HoptoadNotifier::UserInformer
